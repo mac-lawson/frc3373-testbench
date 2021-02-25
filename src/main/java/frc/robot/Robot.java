@@ -85,11 +85,11 @@ public class Robot extends TimedRobot {
         break;
       case kDefaultAuto:
       default:
-      if (joy.getRawAxis(2) > 0.05) {
+      if (joy.getRawButtonPressed(2)) {
         motor.set(0);
       }
       else {
-        motor.set(.03);
+        motor.set(.05);
       }
         break;
     }
@@ -102,12 +102,24 @@ public class Robot extends TimedRobot {
   /** This function is called periodically during operator control. */
   @Override
   public void teleopPeriodic() {
-    if (joy.getRawAxis(1) > 0.05) {
+    if (joy.getRawButtonPressed(6)) {
+      motor.set(.1);
+    }
+    else if (joy.getRawAxis(5) > 0.05) {
+      motor.set(.1);
+    }
+    else if (joy.getRawAxis(5) < -0.05) {
+      motor.set(-.1);
+    }
+    else if (joy.getRawButtonPressed(5)) {
+      motor.set(.02);
+    } 
+    else if (joy.getRawAxis(1) > 0.05) {
       motor.set(.02);
     }
-    if (joy.getRawAxis(1) < -0.05) {
+    else if (joy.getRawAxis(1) < -0.05) {
       motor.set(-.02);
-    } 
+    }
     else {
       motor.set(0);
     }
