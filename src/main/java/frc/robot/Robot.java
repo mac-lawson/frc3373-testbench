@@ -85,7 +85,12 @@ public class Robot extends TimedRobot {
         break;
       case kDefaultAuto:
       default:
-        // Put default auto code here
+      if (joy.getRawAxis(2) > 0.05) {
+        motor.set(0);
+      }
+      else {
+        motor.set(.03);
+      }
         break;
     }
   }
@@ -99,12 +104,12 @@ public class Robot extends TimedRobot {
   public void teleopPeriodic() {
     if (joy.getRawAxis(1) > 0.05) {
       motor.set(.02);
-    } 
-    if (joy.getRawAxis(5) > 0.05) {
-      motor.set(-.02);
     }
+    if (joy.getRawAxis(1) < -0.05) {
+      motor.set(-.02);
+    } 
     else {
-      motor.set(.02);
+      motor.set(0);
     }
   }
   
