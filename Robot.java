@@ -12,6 +12,7 @@ import com.revrobotics.CANSparkMax;
 import com.revrobotics.CANSparkMaxLowLevel.MotorType;
 import edu.wpi.first.wpilibj.DigitalInput;
 import edu.wpi.first.wpilibj.SPI;
+import java.util.Timer;
 
 /**
  * The VM is configured to automatically run this class, and to call the functions corresponding to
@@ -28,6 +29,7 @@ public class Robot extends TimedRobot {
   private SuperJoystick joy;
   private DigitalInput limit;
   private SuperAHRS navx;
+  public Timer timer;
 
 
 
@@ -44,7 +46,7 @@ public class Robot extends TimedRobot {
     joy = new SuperJoystick(0);
     limit = new DigitalInput(7);
     navx = new SuperAHRS(SPI.Port.kOnboardCS0);
-  
+    timer = new Timer("time");
   }
 
   /**
@@ -99,26 +101,20 @@ public class Robot extends TimedRobot {
   /** This function is called periodically during operator control. */
   @Override
   public void teleopPeriodic() {
-    if (joy.getRawButtonPressed(6)) {
+    if (joy.getRawAxis(1) > .05) {
       motor.set(.1);
     }
-    else if (joy.getRawAxis(5) > 0.05) {
-      motor.set(.1);
-    ]
-    else if (limit.get(7)&&joy.getRawAxis(5) > 0.05) {
-      motor.set(.05);
-    }
-    else if (joy.getRawAxis(5) < -0.05) {
+    else if (joy.getRawAxis(1) < -.05) {
       motor.set(-.1);
     }
-    else if (joy.getRawButtonPressed(5)) {
-      motor.set(.02);
-    } 
-    else if (joy.getRawAxis(1) > 0.05) {
-      motor.set(.02);
+    else if (joy.getRawAxis(5) > .05) {
+      motor.set(.05);
     }
-    else if (joy.getRawAxis(1) < -0.05) {
-      motor.set(-.02);
+    else if (joy.getRawAxis(5) < -.05) {
+      motor.set(-.05);
+    }
+    else if (limit.get()) {
+      motor.set(0);
     }
     else {
       motor.set(0);
