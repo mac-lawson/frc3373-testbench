@@ -12,7 +12,8 @@ import com.revrobotics.CANSparkMax;
 import com.revrobotics.CANSparkMaxLowLevel.MotorType;
 import edu.wpi.first.wpilibj.DigitalInput;
 import edu.wpi.first.wpilibj.SPI;
-import java.util.Timer;
+import edu.wpi.first.wpilibj.Timer;
+
 
 /**
  * The VM is configured to automatically run this class, and to call the functions corresponding to
@@ -29,7 +30,6 @@ public class Robot extends TimedRobot {
   private SuperJoystick joy;
   private DigitalInput limit;
   private SuperAHRS navx;
-  public Timer timer;
 
 
 
@@ -46,7 +46,9 @@ public class Robot extends TimedRobot {
     joy = new SuperJoystick(0);
     limit = new DigitalInput(7);
     navx = new SuperAHRS(SPI.Port.kOnboardCS0);
-    timer = new Timer("time");
+    Timer timer = new Timer();
+
+  
   }
 
   /**
@@ -76,6 +78,8 @@ public class Robot extends TimedRobot {
     m_autoSelected = m_chooser.getSelected();
     // m_autoSelected = SmartDashboard.getString("Auto Selector", kDefaultAuto);
     System.out.println("Auto selected: " + m_autoSelected);
+    timer.reset();
+		timer.start();
   }
 
   /** This function is called periodically during autonomous. */
@@ -88,7 +92,15 @@ public class Robot extends TimedRobot {
       case kDefaultAuto:
       default:
       {
+      if (timer.get() < 5.0){
         motor.set(.05);
+      }
+      else if (timer.get() < 10.0) {
+        motor.set(.1)
+      }
+      else if (timer.get() < 15.0) {
+        motor.set(.05)
+      }
       }
         break;
     }
@@ -101,21 +113,34 @@ public class Robot extends TimedRobot {
   /** This function is called periodically during operator control. */
   @Override
   public void teleopPeriodic() {
-    if (joy.getRawAxis(1) > .05) {
+    else if (joy.getRawAxis(5) > 0.05) {
       motor.set(.1);
     }
-    else if (joy.getRawAxis(1) < -.05) {
+    else if (joy.getRawAxis(5) < -0.05) {
       motor.set(-.1);
     }
-    else if (joy.getRawAxis(5) > .05) {
-      motor.set(.05);
+    else if (joy.getRawAxis(1) > 0.05) {
+      motor.set(.02);
     }
-    else if (joy.getRawAxis(5) < -.05) {
-      motor.set(-.05);
+    else if (joy.getRawAxis(1) < -0.05) {
+      motor.set(-.02);
     }
-    else if (limit.get()) {
-      motor.set(0);
+    else if (joy.getPOV(90)) {
+      timer.reset()
+      timer.start()
+      while (timer.get() < 2.0) {
+        motor.set(-.02)
+      }
     }
+    else if (joy.getPOV(270)) {
+      timer.reset()
+      timer.start()
+      while (timer.get() < 2.0) {
+        motor.set(.02)
+      }
+    }
+    }
+    // Limit switch input-- needs timer
     else {
       motor.set(0);
     }
@@ -132,7 +157,11 @@ public class Robot extends TimedRobot {
 
   /** This function is called once when test mode is enabled. */
   @Override
-  public void testInit() {}
+  public void testInit() {
+    if (limit.get()) {
+      motor.set(.1)
+    }
+  }
 
   /** This function is called periodically during test mode. */
   @Override
